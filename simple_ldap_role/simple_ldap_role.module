@@ -71,6 +71,11 @@ function simple_ldap_role_user_login(&$edit, $account) {
  * Implements hook_user_presave().
  */
 function simple_ldap_role_user_presave(&$edit, $account, $category) {
+  // Get an LDAP server object.
+  $server = SimpleLdapServer::singleton();
+  // If the server is read-only, do not perform any drupal-to-ldap sync.
+  if ($server->readonly) return;
+
   if (isset($edit['name']) && isset($edit['roles'])) {
     foreach ($edit['roles'] as $rid => $value) {
       if ($value && $rid != DRUPAL_AUTHENTICATED_RID) {
@@ -87,6 +92,11 @@ function simple_ldap_role_user_presave(&$edit, $account, $category) {
  * Implements hook_user_role_presave().
  */
 function simple_ldap_role_user_role_presave($role) {
+  // Get an LDAP server object.
+  $server = SimpleLdapServer::singleton();
+  // If the server is read-only, do not perform any drupal-to-ldap sync.
+  if ($server->readonly) return;
+
   if (isset($role->op) && $role->op == 'Save role') {
     // Get the module configuration.
     $attribute_name = simple_ldap_role_variable_get('simple_ldap_role_attribute_name');
